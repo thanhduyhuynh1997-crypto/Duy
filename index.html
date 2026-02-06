@@ -1,66 +1,127 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Sao cũng được</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            height: 100vh;
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .card {
-            padding: 60px 80px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-            text-align: center;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        h1 {
-            font-size: 3rem;
-            font-weight: 600;
-            letter-spacing: 2px;
-        }
-
-        p {
-            margin-top: 15px;
-            font-size: 1rem;
-            opacity: 0.8;
-            font-weight: 300;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Công cụ tính y khoa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    color:white;
+    margin:0;
+    padding:20px;
+}
+.container{
+    max-width:600px;
+    margin:auto;
+    background:rgba(255,255,255,0.15);
+    padding:25px;
+    border-radius:15px;
+}
+h2{text-align:center}
+input,select,button{
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+    border-radius:8px;
+    border:none;
+}
+button{
+    background:#00ffd5;
+    font-weight:bold;
+    cursor:pointer;
+}
+.hidden{display:none}
+.result{
+    margin-top:10px;
+    background:rgba(0,0,0,0.25);
+    padding:10px;
+    border-radius:8px;
+}
+small{opacity:0.8}
+</style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>sao cũng được</h1>
-        <p>miễn là bạn thấy ổn</p>
-    </div>
+<div class="container" id="login">
+<h2>Đăng nhập</h2>
+<input id="user" placeholder="Tên đăng nhập">
+<input id="pass" type="password" placeholder="Mật khẩu">
+<button onclick="login()">Đăng nhập</button>
+</div>
+
+<div class="container hidden" id="app">
+<h2>Công cụ tính</h2>
+
+<h3>1️⃣ eGFR (MDRD)</h3>
+<input id="age" type="number" placeholder="Tuổi">
+<input id="scr" type="number" step="0.01" placeholder="Creatinin (mg/dL)">
+<select id="sex">
+<option value="male">Nam</option>
+<option value="female">Nữ</option>
+</select>
+<button onclick="calcMDRD()">Tính eGFR</button>
+<div class="result" id="egfr"></div>
+
+<h3>2️⃣ CHA₂DS₂-VASc</h3>
+<label><input type="checkbox" class="chad"> Suy tim</label><br>
+<label><input type="checkbox" class="chad"> THA</label><br>
+<label><input type="checkbox" class="chad2"> Tuổi ≥75</label><br>
+<label><input type="checkbox" class="chad"> ĐTĐ</label><br>
+<label><input type="checkbox" class="chad2"> Đột quỵ/TIA</label><br>
+<label><input type="checkbox" class="chad"> Bệnh mạch máu</label><br>
+<label><input type="checkbox" class="chad"> Tuổi 65–74</label><br>
+<label><input type="checkbox" class="chad"> Nữ</label><br>
+<button onclick="calcCHAD()">Tính CHA₂DS₂-VASc</button>
+<div class="result" id="chad"></div>
+
+<h3>3️⃣ HAS-BLED</h3>
+<label><input type="checkbox" class="has"> THA</label><br>
+<label><input type="checkbox" class="has"> Suy gan/thận</label><br>
+<label><input type="checkbox" class="has"> Đột quỵ</label><br>
+<label><input type="checkbox" class="has"> Chảy máu</label><br>
+<label><input type="checkbox" class="has"> INR không ổn định</label><br>
+<label><input type="checkbox" class="has"> Tuổi >65</label><br>
+<label><input type="checkbox" class="has"> Thuốc/rượu</label><br>
+<button onclick="calcHAS()">Tính HAS-BLED</button>
+<div class="result" id="has"></div>
+
+<p><small>⚠️ Chỉ mang tính tham khảo – không thay thế ý kiến bác sĩ</small></p>
+</div>
+
+<script>
+function login(){
+    if(user.value && pass.value){
+        login.classList.add("hidden");
+        app.classList.remove("hidden");
+    } else alert("Nhập tài khoản & mật khẩu");
+}
+
+function calcMDRD(){
+    let age=+document.getElementById("age").value;
+    let scr=+document.getElementById("scr").value;
+    let sex=document.getElementById("sex").value;
+    if(!age||!scr){alert("Nhập đủ dữ liệu");return;}
+    let egfr=175*Math.pow(scr,-1.154)*Math.pow(age,-0.203);
+    if(sex==="female") egfr*=0.742;
+    document.getElementById("egfr").innerText=
+        "eGFR ≈ "+egfr.toFixed(1)+" mL/phút/1.73m²";
+}
+
+function calcCHAD(){
+    let s=0;
+    document.querySelectorAll(".chad").forEach(c=>{if(c.checked)s+=1});
+    document.querySelectorAll(".chad2").forEach(c=>{if(c.checked)s+=2});
+    document.getElementById("chad").innerText="CHA₂DS₂-VASc = "+s;
+}
+
+function calcHAS(){
+    let s=0;
+    document.querySelectorAll(".has").forEach(c=>{if(c.checked)s+=1});
+    document.getElementById("has").innerText="HAS-BLED = "+s;
+}
+</script>
 
 </body>
 </html>
